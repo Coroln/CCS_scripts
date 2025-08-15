@@ -29,70 +29,29 @@ An archetype/counter is added by editing "strings.conf" from the root:
 !setname free hex ID archetype name (for archetypes)
 
 **Automatic Client Updates:**
-For keeping the cards up-to-date you should add 
+For keeping the cards up-to-date and to have a server to play on you should create a file named user_configs.json and put
 ```json
+{
+    "repos": [
         {
-            "url": "https://github.com/0x4261756D/CCS_scripts",
+            "url": "https://github.com/Coroln/CCS_scripts",
             "repo_name": "CCS Scripts",
             "repo_path": "./repositories/ccs",
             "script_path": "script",
             "should_update": true,
             "should_read": true
-        },
-``` 
-to /config/configs.json in your ProjectIgnis folder after this part
-```json
-{
-    "repos": [
-        {
-            "url": "https://github.com/ProjectIgnis/DeltaHopeHarbinger",
-            "repo_name": "Project Ignis updates",
-            "repo_path": "./repositories/delta",
-            "has_core": true,
-            "core_path": "bin",
-            "data_path": "",
-            "script_path": "script",
-            "should_update": true,
-            "should_read": true
-        },
-```
-and for field-arts you also have to add
-```json
-        {
-            "url": "https://raw.githubusercontent.com/0x4261756D/CCS_scripts/master/pics/field/{}.png",
-            "type": "field"
-        },
-        {
-            "url": "https://raw.githubusercontent.com/0x4261756D/CCS_scripts/master/pics/field/{}.jpg",
-            "type": "field"
         }
-```
-after this part
-```json
-	}
-		],
-		"urls": [
-
-```
-**Playing with other people using Custom Cards:**
-Add
-```json
-		{
+    ],
+    "servers": [
+        {
             "name": "CCS",
-            "address": "85.214.233.223",
+            "address": "h2871632.stratoserver.net",
             "duelport": 7911,
-            "roomaddress": "85.214.233.223",
+            "roomaddress": "h2871632.stratoserver.net",
+            "roomlistprotocol": "http",
             "roomlistport": 7922
-    	},
+        }
+    ]
+}
 ```
-to /config/configs.json in your ProjectIgnis folder after this part
-```json
-	"servers": [
-		{
-			"name": "EU Central (Casual)",
-			"address": "185.227.110.90",
-			"duelport": 7912,
-			"roomaddress": "185.227.110.90",
-			"roomlistport": 7923
-		},
-```
+inside and save it in ProjectIgnis\config
