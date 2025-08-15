@@ -2,7 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	--xyz summon
-	Xyz.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsAttribute,ATTRIBUTE_WIND),3,2,nil,nil,99,nil,nil,s.matcheck)
+	Xyz.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsAttribute,ATTRIBUTE_WIND),3,2,nil,nil,Xyz.InfiniteMats,nil,nil,s.matcheck)
 	c:EnableReviveLimit()
 	--shuffle
 	local e1=Effect.CreateEffect(c)
