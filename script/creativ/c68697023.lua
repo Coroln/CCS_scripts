@@ -11,9 +11,9 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	--def
+	--search
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetCountLimit(1,{id, 2})
 	e2:SetRange(LOCATION_MZONE)
@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	--effect gain
     local e4=Effect.CreateEffect(c)
-    e4:SetDescription(aux.Stringid(id,1))
+    e4:SetDescription(aux.Stringid(id,2))
     e4:SetType(EFFECT_TYPE_IGNITION)
     e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e4:SetRange(LOCATION_MZONE)
@@ -33,6 +33,7 @@ function s.initial_effect(c)
     e4:SetOperation(s.op)
     c:RegisterEffect(e4)
 end
+--spsummon
 function s.filter(c,e,tp)
 	return c:IsSetCard(0x25d) or c:IsSetCard(0x26) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
@@ -49,7 +50,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
 end
-------------
+--search
 function s.cond(e)
 	return e:GetHandler():IsDefensePos()
 end
@@ -69,7 +70,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end
-----------------
+--effect gain
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():IsReleasable() end
     Duel.Release(e:GetHandler(),REASON_COST)
