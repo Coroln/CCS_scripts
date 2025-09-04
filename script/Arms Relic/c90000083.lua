@@ -72,14 +72,11 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
-function s.ngfilter(c)
-	return #(c:GetLinkedGroup():Filter(Card.IsSpell,nil))>=3
-end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if ep==tp or c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev) 
-	and s.ngfilter(c)
+	and #(c:GetLinkedGroup():Filter(Card.IsSpell,nil))>=3
 end
 function s.cfilter(c)
 	return c:IsAbleToGraveAsCost()
