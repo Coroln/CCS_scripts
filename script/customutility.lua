@@ -49,57 +49,6 @@ function Card.CheckType(c,tp)
 	return (c:GetType()&tp)==tp
 end
 
-function contains(tab,element)
-	for _,value in pairs(tab) do
-		if value==element then
-			return true
-		end
-	end
-	return false
-end
-
-function removeall(tab,element)
-	for _,value in pairs(tab) do
-		if value==element then
-			table.remove(tab,value)
-		end
-	end
-end
-
-function tableFilter(t,f,ex,...)
-	local t2 = {}
-	for _, v in ipairs(t) do
-		if f(v,...) and v~=ex then 
-			table.insert(t2,v)
-		end
-	end
-	return t2
-end
-
-function tableFilterCount(t,f,ex,...)
-	return #tableFilter(t,f,ex,...)
-end
-
-function any(t,f,...)
-	for _, v in ipairs(t) do
-		if f(v,...) then return true end
-	end
-	return false
-end
-
-function all(t,f,...)
-	for _, v in ipairs(t) do
-		if not f(v,...) then return false end
-	end
-	return true
-end
-
-function forEach(t,f,...)
-	for _, v in ipairs(t) do
-		f(v,...)
-	end
-end
-
 function Auxiliary.ForceExtraRules(c,card,init,...)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
