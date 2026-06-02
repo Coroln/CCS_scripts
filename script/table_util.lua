@@ -26,7 +26,7 @@ function filter(t,f,ex,...)
 end
 
 function filterCount(t,f,ex,...)
-	return #tableFilter(t,f,ex,...)
+	return #filter(t,f,ex,...)
 end
 
 function any(t,f,...)
@@ -49,9 +49,13 @@ function forEach(t,f,...)
 	end
 end
 
-function concat(t1,t2)
-    for i=1,#t2 do
-        t1[#t1+1] = t2[i]
+function concat(t1, t2)
+	local t = {}
+    for k, v in pairs(t1) do
+        t[k] = v
     end
-    return t1
+    for k, v in pairs(t2) do
+        t[k] = v
+    end
+    return t
 end
