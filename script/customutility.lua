@@ -213,3 +213,8 @@ function GetMinMaxMaterialCount(i,...)
 	end
 	return min,max
 end
+
+function getMatchingCardEffect(c, code, index)
+	local effs = {c:GetCardEffects(code)}
+	return effs[index]
+end
