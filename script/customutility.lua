@@ -214,7 +214,14 @@ function GetMinMaxMaterialCount(i,...)
 	return min,max
 end
 
-function getMatchingCardEffect(c, code, index)
+function getMatchingCardEffects(c, code, start, ent)
 	local effs = {c:GetCardEffect(code)}
-	return effs[index]
+	if start == ent then
+		return effs[start]
+	end
+	local t = {}
+	for i = start, ent do
+		table.insert(t, effs[i])
+	end
+	return t
 end
