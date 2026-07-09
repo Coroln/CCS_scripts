@@ -7,9 +7,6 @@ HINTMSG__MATERIAL=10002
 HINTMSG_TRICK_MATERIAL=10003
 
 --functions
-function Card.CheckType(c,tp)
-	return (c:GetType()&tp)==tp
-end
 
 function Auxiliary.ForceExtraRules(c,card,init,...)
     local e1=Effect.CreateEffect(c)
@@ -132,39 +129,6 @@ function Auxiliary.SumtypeCon(c,st,con)
 	end
 end
 
-function merge(t1, t2, filter)
-	filter=filter or false
-	if filter==true then
-		local dup=false
-		for _, i in ipairs(t2) do
-			for _, j in ipairs(t1) do
-				dup = (i == j)
-				if dup then break end
-			end
-			if not dup then
-				table.insert(t1, i)
-			end
-		end
-	else
-		for _, i in ipairs(t2) do
-			table.insert(t1, i)
-		end
-	end
-end
-
-function Fusion.AddSpellTrapRep(c,s,value,f,...)
-	f(...)
-	aux.GlobalCheck(s,function()
-		local ge=Effect.CreateEffect(c)
-		ge:SetType(EFFECT_TYPE_FIELD)
-		ge:SetCode(EFFECT_EXTRA_FUSION_MATERIAL)
-		ge:SetTargetRange(LOCATION_SZONE+LOCATION_HAND,LOCATION_SZONE+LOCATION_HAND)
-		ge:SetTarget(function(e,cc) return cc:IsType(TYPE_SPELL+TYPE_TRAP) end)
-		ge:SetValue(value or function(e,cc) if not cc then return false end return cc:IsOriginalCode(c:GetOriginalCode()) end)
-		Duel.RegisterEffect(ge,0)
-	end)
-end
-
 function GetMinMaxMaterialCount(i,...)
 	local params={...}
 	local min,max=0,0
@@ -174,16 +138,4 @@ function GetMinMaxMaterialCount(i,...)
 		end
 	end
 	return min,max
-end
-
-function getMatchingCardEffects(c, code, start, ent)
-	local effs = {c:GetCardEffect(code)}
-	if start == ent then
-		return effs[start]
-	end
-	local t = {}
-	for i = start, ent do
-		table.insert(t, effs[i])
-	end
-	return t
 end

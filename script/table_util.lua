@@ -59,3 +59,31 @@ function concat(t1, t2)
     end
     return t
 end
+
+function sum(t)
+	local s = 0
+	for _, v in ipairs(t) do
+		s = s + v
+	end
+	return s
+end
+
+function merge(t1, t2, filter)
+	filter=filter or false
+	if filter==true then
+		local dup=false
+		for _, i in ipairs(t2) do
+			for _, j in ipairs(t1) do
+				dup = (i == j)
+				if dup then break end
+			end
+			if not dup then
+				table.insert(t1, i)
+			end
+		end
+	else
+		for _, i in ipairs(t2) do
+			table.insert(t1, i)
+		end
+	end
+end

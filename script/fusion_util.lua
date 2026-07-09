@@ -1,0 +1,12 @@
+function Fusion.AddSpellTrapRep(c, s, value, f, ...)
+	f(...)
+	aux.GlobalCheck(s,function()
+		local ge = Effect.CreateEffect(c)
+		ge:SetType(EFFECT_TYPE_FIELD)
+		ge:SetCode(EFFECT_EXTRA_FUSION_MATERIAL)
+		ge:SetTargetRange(LOCATION_SZONE + LOCATION_HAND, LOCATION_SZONE + LOCATION_HAND)
+		ge:SetTarget(function(e, cc) return cc:IsType(TYPE_SPELL + TYPE_TRAP) end)
+		ge:SetValue(value or function(e, cc) if not cc then return false end return cc:IsOriginalCode(c:GetOriginalCode()) end)
+		Duel.RegisterEffect(ge, 0)
+	end)
+end
