@@ -1,4 +1,4 @@
-Duel.LoadScript("link_util.lua")
+Duel.LoadScript("custom_constants.lua")
 
 Card.IsCanBeXyzMaterial = (function()
     local oldfunc = Card.IsCanBeXyzMaterial

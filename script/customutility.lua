@@ -1,12 +1,4 @@
---This file contains a useful list of functions and constants which can be used for a lot of things.
-
---constants
-REGISTER_FLAG_FILTER=16
-HINTMSG_REMOVE_COUNTER=10001
-HINTMSG__MATERIAL=10002
-HINTMSG_TRICK_MATERIAL=10003
-
---functions
+--This file contains a useful list of functions which can be used for a lot of things.
 
 function Auxiliary.ForceExtraRules(c,card,init,...)
     local e1=Effect.CreateEffect(c)
