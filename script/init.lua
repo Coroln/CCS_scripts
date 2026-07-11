@@ -1,3 +1,5 @@
+Duel.LoadScript("link_util.lua")
+
 Card.IsCanBeXyzMaterial = (function()
     local oldfunc = Card.IsCanBeXyzMaterial
 	return function(c, xyz_monster, player, reason)
@@ -83,7 +85,7 @@ Link.Target = (function()
     return function(f, minc, maxc, specialchk)
        return function(e, tp, eg, ep, ev, re, r, rp, chk, c, must, g, min, max)
             if not g then
-                g = Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil) + Duel.GetMatchingGroup(aux.TRUE, tp, LOCATION_SZONE, 0, nil)
+                g = Duel.GetMatchingGroup(Card.IsFaceup, tp, LOCATION_MZONE, 0, nil) + Duel.GetMatchingGroup(aux.TRUE, tp, LOCATION_SZONE, 0, nil)
             end
             if min and min < minc then return false end
             if max and max > maxc then return false end
@@ -136,11 +138,11 @@ end)()
 Link.GetLinkCount = (function()
     return function(c, tp, lc, sg)
         if c:IsLinkMonster() and c:GetLink() > 1 then
-		    return 1+0x10000 * c:GetLink()
+		    return 1 + 0x10000 * c:GetLink()
 	    end
         local e = c:IsHasEffect(EFFECT_LINK_COUNT)
         if e and e:GetValue() then
-            return e:GetValue()(tp, lc, sg)
+            return 1 + 0x10000 * e:GetValue()(tp, lc, sg)
         end
         return 1
     end 
