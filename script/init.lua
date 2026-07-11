@@ -8,21 +8,127 @@ Card.IsCanBeXyzMaterial = (function()
 	end
 end)()
 
+Card.IsCanBeLinkMaterial = (function()
+    local oldfunc = Card.IsCanBeLinkMaterial
+	return function(c, link_monster, player)
+        if link_monster.allowspelltrap == nil then
+            return oldfunc(c, link_monster, player)
+        end
+		return link_monster.link_filter(c, link_monster.allowspelltrap(c, player, link_monster), link_monster, player)
+	end
+end)()
+
 Link.AddProcedure = (function()
     local oldfunc = Link.AddProcedure
 	return function(c, f, min, max, specialchk, desc)
         oldfunc(c, f, min, max, specialchk, desc)
         local mt = c:GetMetatable()
-        mt.link_filter = function(mc, ignorespelltrap, link, tp) return mc and (not f or f(mc, link, SUMMON_TYPE_LINK|MATERIAL_LINK, tp)) and (not (mc:IsType(TYPE_SPELL) and not mc:IsType(TYPE_TRAP)) or ignorespelltrap) end
+        mt.link_filter = function(mc, ignorespelltrap, link, tp) return mc and (not f or f(mc, link, SUMMON_TYPE_LINK|MATERIAL_LINK, tp) or mc:IsSpellTrap()) and (mc:IsMonster() or ignorespelltrap) end
 	end
 end)()
 
-Card.IsCanBeLinkMaterial = (function()
-    local oldfunc = Card.IsCanBeLinkMaterial
-	return function(c, link_monster, player)
-        if link_monster.allowspelltrap == nil or link_monster.link_filter == nil then
-            return oldfunc(c, link_monster, player)
+Link.ConditionFilter = (function()
+    return function(c, f, lc, tp)
+        local res1 = c:IsCanBeLinkMaterial(lc, tp) and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp) or not c:IsMonster())
+        local res2 = false
+        local formud_eff = c:IsHasEffect(EFFECT_FORMUD_SKIPPER)
+        if formud_eff then
+        local label = {formud_eff:GetLabel()}
+        for i = 1, #label - 1, 2 do
+            c:AssumeProperty(label[i], label[i + 1])
         end
-		return link_monster.link_filter(c, link_monster.allowspelltrap(c, player, link_monster), link_monster, player)
-	end
+        res2 = c:IsCanBeLinkMaterial(lc, tp) and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp) or not c:IsMonster())
+        end
+        return res1 or res2
+    end
+end)()
+
+Link.Condition = (function()
+    return function(f, minc, maxc, specialchk)
+        return function(e, c, must, g, min, max)
+            if c == nil then return true end
+            if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
+            local tp = c:GetControler()
+            if not g then
+                g = Duel.GetMatchingGroup(Card.IsFaceup, tp, LOCATION_MZONE, 0, nil) + Duel.GetMatchingGroup(aux.TRUE, tp, LOCATION_SZONE, 0, nil)
+            end
+            local mg = g:Filter(Link.ConditionFilter, nil, f, c, tp)
+            local mustg = Auxiliary.GetMustBeMaterialGroup(tp, g, tp, c, mg, REASON_LINK)
+            if must then mustg:Merge(must) end
+            if min and min < minc then return false end
+            if max and max > maxc then return false end
+            min = min or minc
+            max = max or maxc
+            if mustg:IsExists(aux.NOT(Link.ConditionFilter), 1, nil, f, c, tp) or #mustg > max then return false end
+            local emt, tg = aux.GetExtraMaterials(tp, mustg + mg, c, SUMMON_TYPE_LINK)
+            tg:Match(Link.ConditionFilter, nil, f, c, tp)
+            local mg_tg = mg + tg
+            local res = mg_tg:Includes(mustg) and #mustg <= max
+            if res then
+                if #mustg == max then
+                    local sg = Group.CreateGroup()
+                    res = mustg:IsExists(Link.CheckRecursive, 1, sg, tp, sg, mg_tg, c, min, max, f, specialchk, mg, emt)
+                elseif #mustg < max then
+                    local sg = mustg
+                    res = mg_tg:IsExists(Link.CheckRecursive, 1, sg, tp, sg, mg_tg, c, min, max, f, specialchk, mg, emt)
+                end
+            end
+            aux.DeleteExtraMaterialGroups(emt)
+            return res
+        end
+    end
+end)()
+
+Link.Target = (function()
+    return function(f, minc, maxc, specialchk)
+       return function(e, tp, eg, ep, ev, re, r, rp, chk, c, must, g, min, max)
+            if not g then
+                g = Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil) + Duel.GetMatchingGroup(aux.TRUE, tp, LOCATION_SZONE, 0, nil)
+            end
+            if min and min < minc then return false end
+            if max and max > maxc then return false end
+            min = min or minc
+            max = max or maxc
+            local mg = g:Filter(Link.ConditionFilter, nil, f, c, tp)
+            local mustg = Auxiliary.GetMustBeMaterialGroup(tp, g, tp, c, mg, REASON_LINK)
+            if must then mustg:Merge(must) end
+            local emt, tg = aux.GetExtraMaterials(tp, mustg + mg, c, SUMMON_TYPE_LINK)
+            tg:Match(Link.ConditionFilter, nil, f, c, tp)
+            local sg = Group.CreateGroup()
+            local finish=false
+            local cancel=false
+            sg:Merge(mustg)
+            local mg_tg = mg + tg
+            while #sg < max do
+                local filters = {}
+                if #sg > 0 then
+                    Link.CheckRecursive2(sg:GetFirst(), tp, Group.CreateGroup(), sg, mg_tg, mg_tg, c, min, max, f, specialchk, mg, emt, filters)
+                end
+                local cg = mg_tg:Filter(Link.CheckRecursive, sg, tp, sg, mg_tg, c, min, max, f, specialchk, mg, emt, {table.unpack(filters)})
+                if #cg == 0 then break end
+                finish = #sg >= min and #sg <= max and Link.CheckGoal(tp, sg, c, min, f, specialchk, filters)
+                cancel = Duel.IsSummonCancelable() and #sg == 0
+                Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_LMATERIAL)
+                local tc = Group.SelectUnselect(cg, sg, tp, finish, cancel, 1, 1)
+                if not tc then break end
+                if #mustg == 0 or not mustg:IsContains(tc) then
+                    if not sg:IsContains(tc) then
+                        sg:AddCard(tc)
+                    else
+                        sg:RemoveCard(tc)
+                    end
+                end
+            end
+            if #sg > 0 then
+                local filters = {}
+                Link.CheckRecursive2(sg:GetFirst(), tp, Group.CreateGroup(), sg, mg_tg, mg_tg, c, min, max, f, specialchk, mg, emt, filters)
+                sg:KeepAlive()
+                e:SetLabelObject({sg, filters, emt})
+                return true
+            else
+                aux.DeleteExtraMaterialGroups(emt)
+                return false
+            end
+        end 
+    end
 end)()
