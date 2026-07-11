@@ -132,3 +132,27 @@ Link.Target = (function()
         end 
     end
 end)()
+
+Link.GetLinkCount = (function()
+    return function(c, tp, lc, sg)
+        if c:IsLinkMonster() and c:GetLink() > 1 then
+		    return 1+0x10000 * c:GetLink()
+	    end
+        local e = c:IsHasEffect(EFFECT_LINK_COUNT)
+        if e and e:GetValue() then
+            return e:GetValue()(tp, lc, sg)
+        end
+        return 1
+    end 
+end)()
+
+Link.CheckGoal = (function()
+    return function(tp, sg, lc, minc, f, specialchk, filt)
+        for _, filt in ipairs(filt) do
+            if not sg:IsExists(filt[2], 1, nil, filt[3], tp, sg, Group.CreateGroup(), lc, filt[1], 1) then
+                return false
+            end
+        end
+	    return #sg >= minc and sg:CheckWithSumEqual(Link.GetLinkCount, lc:GetLink(), #sg, #sg, tp, lc, sg) and (not specialchk or specialchk(sg, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp)) and Duel.GetLocationCountFromEx(tp, tp, sg, lc) > 0
+    end
+end)()
