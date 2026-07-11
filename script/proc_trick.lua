@@ -1,7 +1,4 @@
-Duel.LoadScript("customutility.lua")
-
-SUMMON_TYPE_TRICK=0x4f000000
-REASON_TRICK=0x20000000
+Duel.LoadScript("custom_constants.lua")
 
 if not Trick then
 	Trick={}
