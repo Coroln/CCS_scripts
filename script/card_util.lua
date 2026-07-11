@@ -135,3 +135,31 @@ function Card.GetMatchingCardEffects(c, code, start, ent)
 	
 	return t
 end
+
+function Card.GetMaxCounterRemoval(c, tp, cttypes, reason)
+	local ct = 0
+	if type(cttypes) == "table" then
+		for _, cttype in ipairs(cttypes) do
+			for i = 1, c:GetCounter(cttype) do
+				if c:IsCanRemoveCounter(tp, cttype, i, reason) then
+					ct = ct + 1
+				else
+					break
+				end
+			end
+		end
+	else
+		for i = 1, c:GetCounter(cttypes) do
+			if c:IsCanRemoveCounter(tp, cttypes, i, reason) then
+				ct = ct + 1
+			else
+				break
+			end
+		end
+	end
+	return ct
+end
+
+function Card.MaxCounterRemovalCheck(c, tp, cttypes, ctamount, reason)
+	return c:GetMaxCounterRemoval(tp, cttypes, reason) >= ctamount
+end
