@@ -131,3 +131,85 @@ function GetMinMaxMaterialCount(i,...)
 	end
 	return min,max
 end
+
+function Auxiliary.GetLinkMonstersPointingToSequence(tp, seq)
+    local g = Group.CreateGroup()
+    local tc
+
+    if seq == 0 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 1)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_LEFT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 5)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM_LEFT) then
+            g:AddCard(tc)
+        end
+    end
+    if seq == 1 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 0)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 2)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_LEFT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 5)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM) then
+            g:AddCard(tc)
+        end
+    end
+    if seq == 2 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 1)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 3)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_LEFT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 5)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 6)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM_LEFT) then
+            g:AddCard(tc)
+        end
+    end
+    if seq == 3 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 2)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 4)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_LEFT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 6)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM) then
+            g:AddCard(tc)
+        end
+    end
+    if seq == 4 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 3)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 6)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM_RIGHT) then
+            g:AddCard(tc)
+        end
+    end
+
+    return g
+end
+
+function Auxiliary.GetLinkMonstersPointingToMonster(c)
+	if ~(c:IsMonster()) then
+		return Group.CreateGroup()
+	end
+
+	return aux.GetLinkMonstersPointingToSequence(c:GetControler(), c:GetSequence())
+end
