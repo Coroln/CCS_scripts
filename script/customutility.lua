@@ -207,7 +207,7 @@ function Auxiliary.GetLinkMonstersPointingToSequence(tp, seq)
 end
 
 function Auxiliary.GetLinkMonstersPointingToMonster(c)
-	if ~(c:IsMonster()) then
+	if not c:IsMonster() then
 		return Group.CreateGroup()
 	end
 
