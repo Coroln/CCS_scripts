@@ -3,7 +3,7 @@ Duel.LoadScript("custom_constants.lua")
 Card.IsCanBeXyzMaterial = (function()
     local oldfunc = Card.IsCanBeXyzMaterial
 	return function(c, xyz_monster, player, reason)
-        if xyz_monster.allowtoken == nil then
+        if not xyz_monster or xyz_monster.allowtoken == nil then
             return oldfunc(c, xyz_monster, player, reason)
         end
 		return xyz_monster.xyz_filter(c, xyz_monster.allowtoken(c, player, xyz_monster, reason), xyz_monster, player)
@@ -13,7 +13,7 @@ end)()
 Card.IsCanBeLinkMaterial = (function()
     local oldfunc = Card.IsCanBeLinkMaterial
 	return function(c, link_monster, player)
-        if link_monster.allowspelltrap == nil then
+        if not link_monster or link_monster.allowspelltrap == nil then
             return oldfunc(c, link_monster, player)
         end
 		return link_monster.link_filter(c, link_monster.allowspelltrap(c, player, link_monster), link_monster, player)
