@@ -132,7 +132,7 @@ function GetMinMaxMaterialCount(i,...)
 	return min,max
 end
 
-function Auxiliary.GetLinkMonstersPointingToSequence(tp, seq)
+function Auxiliary.GetLinkMonstersPointingToSequence(tp, seq, f)
     local g = Group.CreateGroup()
     local tc
 
@@ -203,13 +203,16 @@ function Auxiliary.GetLinkMonstersPointingToSequence(tp, seq)
         end
     end
 
-    return g
+	if f then
+    	return g:Filter(f, nil)
+	end
+	return g
 end
 
-function Auxiliary.GetLinkMonstersPointingToMonster(c)
+function Auxiliary.GetLinkMonstersPointingToMonster(c, f)
 	if not c:IsMonster() then
 		return Group.CreateGroup()
 	end
 
-	return aux.GetLinkMonstersPointingToSequence(c:GetControler(), c:GetSequence())
+	return aux.GetLinkMonstersPointingToSequence(c:GetControler(), c:GetSequence(), f)
 end
