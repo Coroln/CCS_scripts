@@ -216,3 +216,31 @@ function Auxiliary.GetLinkMonstersPointingToMonster(c, f)
 
 	return aux.GetLinkMonstersPointingToSequence(c:GetControler(), c:GetSequence(), f)
 end
+
+--Hilfsfunktion, um Effekte zu registrieren, die feuern, wenn die Karte als Material benutzt wird.
+--c: Die Karte
+--tpe: Der Beschwörungstyp als Grund (REASON_FUSION, REASON_SYNCHRO, ...)
+--cl: Ein optionales Countlimit als table
+--f: Ein optionaler Filter den das Monster, für das die Karte als Material verwendet wird, erfüllen muss
+--tg: Eine optionale Target-Funktion
+--op: Die Operation-Funktion
+function Auxiliary.RegisterUsedAsMaterialEffect(c, tpe, cl, f, tg, op)
+    local e = Effect.CreateEffect(c)
+    e:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
+    e:SetCode(EVENT_BE_MATERIAL)
+    e:SetProperty(EFFECT_FLAG_DELAY)
+    e:SetCountLimit(table.unpack(cl))
+    e:SetCondition(aux.UsedAsMaterialCondition(c, tpe, f))
+    if tg then
+        e:SetTarget(tg)
+    end
+    e:SetOperation(op)
+    c:RegisterEffect(e)
+end
+
+function Auxiliary.UsedAsMaterialCondition(c, tpe, f)
+    return function(e, tp, eg, ep, ev, re, r, rp)
+        local rc = c:GetReasonCard()
+        return (not f or f(rc, e, tp, eg, ep, ev, re, r, rp)) and (r & (tpe + REASON_MATERIAL)) > 0
+    end
+end
