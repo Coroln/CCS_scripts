@@ -1,5 +1,5 @@
-function Link.AddSpellTrapProcedure(c, f, min, max, allowspelltrap, specialchk, desc)
+function Link.AddSpellTrapProcedure(c, f, min, max, st_filter, specialchk, desc)
     Link.AddProcedure(c, f, min, max, specialchk, desc)
     local mt = c:GetMetatable()
-    mt.allowspelltrap = allowspelltrap
+    mt.st_filter = st_filter
 end

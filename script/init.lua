@@ -3,20 +3,20 @@ Duel.LoadScript("custom_constants.lua")
 Card.IsCanBeXyzMaterial = (function()
     local oldfunc = Card.IsCanBeXyzMaterial
 	return function(c, xyz_monster, player, reason)
-        if xyz_monster.allowtoken == nil then
+        if not xyz_monster or not xyz_monster.token_filter then
             return oldfunc(c, xyz_monster, player, reason)
         end
-		return xyz_monster.xyz_filter(c, xyz_monster.allowtoken(c, player, xyz_monster, reason), xyz_monster, player)
+		return xyz_monster.xyz_filter(c, xyz_monster.token_filter(c, player, xyz_monster, reason), xyz_monster, player)
 	end
 end)()
 
 Card.IsCanBeLinkMaterial = (function()
     local oldfunc = Card.IsCanBeLinkMaterial
 	return function(c, link_monster, player)
-        if link_monster.allowspelltrap == nil then
+        if not link_monster or not link_monster.st_filter then
             return oldfunc(c, link_monster, player)
         end
-		return link_monster.link_filter(c, link_monster.allowspelltrap(c, player, link_monster), link_monster, player)
+		return link_monster.link_filter(c, link_monster.st_filter(c, player, link_monster), link_monster, player)
 	end
 end)()
 
@@ -25,13 +25,22 @@ Link.AddProcedure = (function()
 	return function(c, f, min, max, specialchk, desc)
         oldfunc(c, f, min, max, specialchk, desc)
         local mt = c:GetMetatable()
-        mt.link_filter = function(mc, ignorespelltrap, link, tp) return mc and (not f or f(mc, link, SUMMON_TYPE_LINK|MATERIAL_LINK, tp) or mc:IsSpellTrap()) and (mc:IsMonster() or ignorespelltrap) end
+        mt.link_filter = function(mc, allowspelltrap, link, tp)
+            if not mc then
+                return false
+            end
+            if mc:IsMonster() then
+                return not f or f(mc, link, SUMMON_TYPE_LINK | MATERIAL_LINK, tp)
+            end
+
+            return allowspelltrap
+        end
 	end
 end)()
 
 Link.ConditionFilter = (function()
     return function(c, f, lc, tp)
-        local res1 = c:IsCanBeLinkMaterial(lc, tp) and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp) or not c:IsMonster())
+        local res1 = c:IsCanBeLinkMaterial(lc, tp) and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp) or (not c:IsMonster() and lc.st_filter))
         local res2 = false
         local formud_eff = c:IsHasEffect(EFFECT_FORMUD_SKIPPER)
         if formud_eff then
@@ -39,7 +48,7 @@ Link.ConditionFilter = (function()
         for i = 1, #label - 1, 2 do
             c:AssumeProperty(label[i], label[i + 1])
         end
-        res2 = c:IsCanBeLinkMaterial(lc, tp) and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp) or not c:IsMonster())
+        res2 = c:IsCanBeLinkMaterial(lc, tp) and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp) or (not c:IsMonster() and lc.st_filter))
         end
         return res1 or res2
     end
