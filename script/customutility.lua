@@ -131,3 +131,116 @@ function GetMinMaxMaterialCount(i,...)
 	end
 	return min,max
 end
+
+function Auxiliary.GetLinkMonstersPointingToSequence(tp, seq, f)
+    local g = Group.CreateGroup()
+    local tc
+
+    if seq == 0 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 1)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_LEFT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 5)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM_LEFT) then
+            g:AddCard(tc)
+        end
+    end
+    if seq == 1 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 0)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 2)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_LEFT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 5)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM) then
+            g:AddCard(tc)
+        end
+    end
+    if seq == 2 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 1)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 3)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_LEFT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 5)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 6)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM_LEFT) then
+            g:AddCard(tc)
+        end
+    end
+    if seq == 3 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 2)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 4)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_LEFT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 6)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM) then
+            g:AddCard(tc)
+        end
+    end
+    if seq == 4 then
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 3)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_RIGHT) then
+            g:AddCard(tc)
+        end
+        tc = Duel.GetFieldCard(tp, LOCATION_MZONE, 6)
+        if tc and tc:IsLinkMonster() and tc:IsLinkMarker(LINK_MARKER_BOTTOM_RIGHT) then
+            g:AddCard(tc)
+        end
+    end
+
+	if f then
+    	return g:Filter(f, nil)
+	end
+	return g
+end
+
+function Auxiliary.GetLinkMonstersPointingToMonster(c, f)
+	if not c:IsMonster() then
+		return Group.CreateGroup()
+	end
+
+	return aux.GetLinkMonstersPointingToSequence(c:GetControler(), c:GetSequence(), f)
+end
+
+--Hilfsfunktion, um Effekte zu registrieren, die feuern, wenn die Karte als Material benutzt wird.
+--c: Die Karte
+--tpe: Der Beschwörungstyp als Grund (REASON_FUSION, REASON_SYNCHRO, ...)
+--cl: Ein optionales Countlimit als table
+--f: Ein optionaler Filter den das Monster, für das die Karte als Material verwendet wird, erfüllen muss
+--tg: Eine optionale Target-Funktion
+--op: Die Operation-Funktion
+function Auxiliary.RegisterUsedAsMaterialEffect(c, tpe, cl, f, tg, op)
+    local e = Effect.CreateEffect(c)
+    e:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
+    e:SetCode(EVENT_BE_MATERIAL)
+    e:SetProperty(EFFECT_FLAG_DELAY)
+    e:SetCountLimit(table.unpack(cl))
+    e:SetCondition(aux.UsedAsMaterialCondition(c, tpe, f))
+    if tg then
+        e:SetTarget(tg)
+    end
+    e:SetOperation(op)
+    c:RegisterEffect(e)
+end
+
+function Auxiliary.UsedAsMaterialCondition(c, tpe, f)
+    return function(e, tp, eg, ep, ev, re, r, rp)
+        local rc = c:GetReasonCard()
+        return (not f or f(rc, e, tp, eg, ep, ev, re, r, rp)) and (r & (tpe + REASON_MATERIAL)) > 0
+    end
+end
