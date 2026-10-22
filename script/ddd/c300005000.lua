@@ -74,7 +74,7 @@ end
 function s.revop(e,tp,eg,ep,ev,re,r,rp)
 	local effs={Duel.GetPlayerEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON)}
 	for _,eff in ipairs(effs) do
-		if eff:GetOwner():IsCode(9024198,72181263,19808608) then
+		if eff:GetOwner():IsSetCard(SET_DD) or eff:GetOwner():IsSetCard(SET_DARK_CONTRACT) then
 			eff:Reset()
 		end
 	end
