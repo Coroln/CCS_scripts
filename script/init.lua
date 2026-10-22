@@ -40,15 +40,15 @@ end)()
 
 Link.ConditionFilter = (function()
     return function(c, f, lc, tp)
-        local res1 = c:IsCanBeLinkMaterial(lc, tp) and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp) or (not c:IsMonster() and lc.st_filter))
+        local res1 = c:IsCanBeLinkMaterial(lc, tp) and (c:IsMonster() and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp)) or (not c:IsMonster() and lc.st_filter and lc.st_filter(c, lc, tp)))
         local res2 = false
         local formud_eff = c:IsHasEffect(EFFECT_FORMUD_SKIPPER)
         if formud_eff then
-        local label = {formud_eff:GetLabel()}
-        for i = 1, #label - 1, 2 do
-            c:AssumeProperty(label[i], label[i + 1])
-        end
-        res2 = c:IsCanBeLinkMaterial(lc, tp) and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp) or (not c:IsMonster() and lc.st_filter))
+            local label = {formud_eff:GetLabel()}
+            for i = 1, #label - 1, 2 do
+                c:AssumeProperty(label[i], label[i + 1])
+            end
+            res2 = c:IsCanBeLinkMaterial(lc, tp) and (c:IsMonster() and (not f or f(c, lc, SUMMON_TYPE_LINK | MATERIAL_LINK, tp)) or (not c:IsMonster() and lc.st_filter and lc.st_filter(c, lc, tp)))
         end
         return res1 or res2
     end
