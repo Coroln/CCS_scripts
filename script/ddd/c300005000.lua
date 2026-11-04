@@ -63,7 +63,7 @@ function s.revtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local effs={Duel.GetPlayerEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON)}
 	if chk==0 then
 		for _,eff in ipairs(effs) do
-			if eff:GetOwner():IsSetCard(SET_DD) then
+			if eff:GetOwner():IsSetCard(SET_DD) or ff:GetOwner():IsSetCard(SET_DARK_CONTRACT) then
 				return true
 			end
 		end
