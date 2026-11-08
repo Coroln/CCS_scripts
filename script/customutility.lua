@@ -121,7 +121,7 @@ function Auxiliary.SumtypeCon(c,st,con)
 	end
 end
 
-function GetMinMaxMaterialCount(i,...)
+function Auxiliary.GetMinMaxMaterialCount(i,...)
 	local params={...}
 	local min,max=0,0
 	for _,t in ipairs(params) do
