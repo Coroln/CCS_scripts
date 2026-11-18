@@ -1,4 +1,5 @@
 Duel.LoadScript("customutility.lua")
+Duel.LoadScript("card_util.lua)
 
 if not Trick then
 	Trick={}
