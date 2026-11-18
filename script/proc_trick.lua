@@ -103,7 +103,7 @@ function Trick.Rescon(monsterTable, trapTable, min, max, mustg, materialDestinat
 				return false
 			end
 		end
-		return max >= #sg and #sg >= min and Duel.GetLocationCountFromEx(tp, tp, sg, e:GetHandler()) > 0 and (not matCheck or matCheck(sg, e, tp)) and sg:Includes(mustg) --and sg:FilterCount(Card.IsAbleToLocation, nil, dest, false) == #sg
+		return max >= #sg and #sg >= min and Duel.GetLocationCountFromEx(tp, tp, sg, e:GetHandler()) > 0 and (not matCheck or matCheck(sg, e, tp)) and sg:Includes(mustg) and sg:FilterCount(Card.IsAbleToLocation, nil, dest, false) == #sg
 	end
 end
 
