@@ -163,3 +163,33 @@ end
 function Card.MaxCounterRemovalCheck(c, tp, cttypes, ctamount, reason)
 	return c:GetMaxCounterRemoval(tp, cttypes, reason) >= ctamount
 end
+
+function Card.IsAbleToLocation(c, loc, asCost)
+	if asCost == true then
+		if loc == LOCATION_DECK then
+			return c:IsAbleToDeckAsCost()
+		elseif loc == LOCATION_EXTRA then
+			return c:IsAbleToExtraAsCost()
+		elseif loc == LOCATION_GRAVE then
+			return c:IsAbleToGraveAsCost()
+		elseif loc == LOCATION_HAND then
+			return c:IsAbleToHandAsCost()
+		elseif loc == LOCATION_REMOVED then
+			return c:IsAbleToRemoveAsCost()
+		end
+	else
+		if loc == LOCATION_DECK then
+			return c:IsAbleToDeck()
+		elseif loc == LOCATION_EXTRA then
+			return c:IsAbleToExtra()
+		elseif loc == LOCATION_GRAVE then
+			return c:IsAbleToGrave()
+		elseif loc == LOCATION_HAND then
+			return c:IsAbleToHand()
+		elseif loc == LOCATION_REMOVED then
+			return c:IsAbleToRemove()
+		end
+	end
+
+	return false
+end
