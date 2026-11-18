@@ -1,4 +1,5 @@
 Duel.LoadScript("custom_constants.lua")
+Duel.LoadScript("proc_trick.lua")
 
 Card.IsCanBeXyzMaterial = (function()
     local oldfunc = Card.IsCanBeXyzMaterial
