@@ -5,14 +5,38 @@ if not Trick then
 end
 
 --Parameter:
---c: Das Trick-Monster
---desc: Optionale Beschreibung des Effektes
+--c: Das Trick-Monster.
+--desc: Optionale Beschreibung des Effektes.
 --monsterTable: Table, der weitere Table der Form {Filter, min, max} beinhält und die benötigten Monster mit ihrer Anzahl klassifiziert.
 --trapTable: Wie oben, aber mit den Fallen.
 --matCheck: Optionaler Filter mit der Signatur (sg, e, tp), den die gewählten Materialien durlaufen.
 --materialDestination: Optionale Location, wohin die Materialien geschickt werden. GY ist Standard.
 --extracon: Optionale Beschwörungsbedingung mit der Signatur (e, tp) 
---extraop: Optionale Operation mit der Signatur (e, tp, mg) die nach der Beschwörung ausgeführt wird. Hierbei ist mg die Materialgruppe. 
+--extraop: Optionale Operation mit der Signatur (e, tp, mg) die nach der Beschwörung ausgeführt wird. Hierbei ist mg die Materialgruppe.
+
+--[[Kleines Beispiel: 2 LIGHT Monsters + 2 Fiend Monsters including a LIGHT Fiend Monster Special Summoned from your Extradeck + 2 "Fiendsmith" Traps including "Fiendsmith Kyrie". 
+	Materials that are used for this card's Trick Summon are shuffeled into the Deck instead of going to the GY. 
+	You can only Trick Summon this card if you control a "Fiendsmith" card.
+	When this card is Trick Summoned, you can gain LP equal to the combined ATK of all monsters used as Material for this card.
+
+Trick.AddProcedure(c, nil, {{s.lightfilter, 2, 2}, {s.fiendfilter, 2, 2}}, {{s.trapfilter, 2, 2}}, s.matCheck, LOCATION_DECK, s.extracon, s.extraop)
+
+function s.matCheck(sg, e, tp)
+	return sg:IsExists(s.lightfiendfilter, 1, nil, tp) and sg:IsExists(Card.IsCode, 1, nil, CODE_FIENDSMITH_KYRIE)
+end
+
+function s.extracon(e, tp)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard, 1, tp, LOCATION_ONFIELD, 0, 1, nil, SET_FIENDSMITH)
+end
+
+function s.extraop(e, tp, mg)
+	if Duel.SelectYesNo(tp, aux.Stringid(id, 0)) then
+		Duel.Recover(tp, mg:Filter(Card.IsMonster, nil):GetSum(Card.GetAttack), REASON_EFFECT)
+	end
+end
+
+Filter hierhin xD
+--]]
 function Trick.AddProcedure(c, desc, monsterTable, trapTable, matCheck, materialDestination, extracon, extraop)
 	if c:IsStatus(STATUS_COPYING_EFFECT) then 
 		return
